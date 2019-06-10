@@ -1,3 +1,5 @@
+# Terraform with Windows in GCP
+
 1) In AWS > IAM > New user for Terraform > terraform-user > AWS access type > Programmatic access > administrator access > Review > Create user
 Access key ID and Secret access key is generated
 

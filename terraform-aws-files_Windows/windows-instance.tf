@@ -33,6 +33,7 @@ EOF
   }
   connection {
     host = "${self.public_ip}"  
+    timeout = "10m"
     type = "winrm"
     user = "${var.INSTANCE_USERNAME}"
     password = "${var.INSTANCE_PASSWORD}"

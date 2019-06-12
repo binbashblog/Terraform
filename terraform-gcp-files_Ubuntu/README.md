@@ -13,14 +13,28 @@
 `curl https://sdk.cloud.google.com | bash`
 Move to /usr/local/bin and/or set your PATH if needed
 
-4) Initialize the gcloud environment:
+Or via your package manager, i.e for Ubuntu/Debian:
+# Add the Cloud SDK distribution URI as a package source
+`echo "deb http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list`
 
-`gcloud init`
+# Import the Google Cloud Platform public key
+`curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -`
 
+# Update the package list and install the Cloud SDK
+`sudo apt-get update && sudo apt-get install google-cloud-sdk`
+
+
+4) Run `gcloud init` and follow instructions 
+
+You can run gcloud commands to get things such as compute machine types and OS images, etc to use in your config e.g:
+
+`gcloud compute machine-types list --filter="zone:(europe-west2-c) name~'standard'"`
+
+`gcloud compute images list --filter="name~'ubuntu'"`
 
 5) Create a project in GCP
 
-6) Create a Service Account with the compute admin role and download the JSON file. Keep thid JSON file safe, do not store it in your GIT repository, put the JSON file name (terraform-account.json) in the .gitignore file to ensure this.
+6) Go to IAM & admin > Service Accounts. Create a Service Account (I called mine terraform) with the compute admin role and click CREATE KEY. Download the JSON file. Keep this JSON file safe, do not store it in your GIT repository, put the JSON file name (terraform-account.json) in the .gitignore file to ensure this.
 
 7) Amend the tf files in the repo to match your project, region, credentials file, etc
 
@@ -34,3 +48,4 @@ Move to /usr/local/bin and/or set your PATH if needed
 
 12) Run `terraform destroy` to destroy the instances
 
+Expand further with a script to configure the OS, the script could update the instance and then run puppet for instance.

@@ -1,27 +1,4 @@
-# Terraform with Windows in GCP
-
-1) In AWS > IAM > New user for Terraform > terraform-user > AWS access type > Programmatic access > administrator access > Review > Create user
-Access key ID and Secret access key is generated
-
-2) install AWS CLI
-curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-unzip awscli-bundle.zip
-sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-
-3) 
-echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)
-export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary
-
-4) type in AWS configure
-
-5) Enter access key
-6) Enter Secret Key
-
-7) Region - us-west-2
-
-8) None (json is default)
-
-9) Download Terraform binary:
+1) Download Terraform binary:
 
 `wget https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_linux_amd64.zip`
 
@@ -31,27 +8,44 @@ export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary
 
 `terraform -v`
 
-10) unzip terraform to /usr/local/bin so it will add it to your path, chmod +x terraform
+3) Download Google Cloud SDK:
 
-11) terraform --version
+`curl https://sdk.cloud.google.com | bash`
+Move to /usr/local/bin and/or set your PATH if needed
 
-12) Git clone the code
+Or via your package manager, i.e for Ubuntu/Debian:
+# Add the Cloud SDK distribution URI as a package source
+`echo "deb http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list`
 
-13) Keep the variables.secret.tf file out of GIT by adding it to .gitignore
+# Import the Google Cloud Platform public key
+`curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -`
 
-14) Adjust the tf files to your AWS environment
-
-15) Run the terraform commands to verify the tf files are valid
-
-`terraform init`
-`terraform plan`
-
-16) Build and destroy:
-
-`terraform apply`
-`terraform destroy`
+# Update the package list and install the Cloud SDK
+`sudo apt-get update && sudo apt-get install google-cloud-sdk`
 
 
+4) Run `gcloud init` and follow instructions 
 
+You can run gcloud commands to get things such as compute machine types and OS images, etc to use in your config e.g:
 
- Run the terraform commands to verify everything is working
+`gcloud compute machine-types list --filter="zone:(europe-west2-c) name~'standard'"`
+
+`gcloud compute images list --filter="name~'ubuntu'"`
+
+5) Create a project in GCP
+
+6) Go to IAM & admin > Service Accounts. Create a Service Account (I called mine terraform) with the compute admin role and click CREATE KEY. Download the JSON file. Keep this JSON file safe, do not store it in your GIT repository, put the JSON file name (terraform-account.json) in the .gitignore file to ensure this.
+
+7) Amend the tf files in the repo to match your project, region, credentials file, etc
+
+8) Run `terraform init`, this should verify the tf files are valid
+
+9) Run `terraform plan` to see what terraform will do
+
+10) Now `terraform apply`
+
+11) Now you can run gcloud compute instances list to list the instances built by your terraform code
+
+12) Run `terraform destroy` to destroy the instances
+
+Expand further with a script to configure the OS, the script could update the instance and then run puppet for instance.

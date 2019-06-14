@@ -1,62 +1,64 @@
-resource "aws_instance" "terraform-Windows" {
-  ami 			= "${lookup(var.WIN_AMIS, var.aws_region)}"
-  instance_type 	= "t2.micro"
-  key_name 		= "${aws_key_pair.mykey.key_name}"
-  security_groups 	= ["${aws_security_group.allow_rdp_winrm.name}"]
-  user_data = <<EOF
-<powershell>
-net user ${var.INSTANCE_USERNAME} '${var.INSTANCE_PASSWORD}' /add /y
-net localgroup administrators ${var.INSTANCE_USERNAME} /add
+resource "google_compute_instance" "tf-gc-windows" {
+  name			= "tf-gc-windows"
+  zone         		= "${var.zone}"
+  machine_type 		= "${var.machine_type}"
 
-winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
-winrm set winrm/config '@{MaxTimeoutms="1800000"}'
-winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set winrm/config/service/auth '@{Basic="true"}'
+  allow_stopping_for_update = true
 
-netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
+  boot_disk {
+    auto_delete = "true"
 
-net stop winrm
-sc.exe config winrm start=auto
-net start winrm
-</powershell>
+    initialize_params {
+      image = "windows-cloud/windows-2016"
+      size  = "${var.boot_disk_size_size}"
+      type  = "${var.boot_disk_size_type}"
+    }
+  }
+
+
+  network_interface {
+     network    = "default"
+     access_config {}
+     #address       = ""
+  }
+
+
+    metadata = { 
+      sysprep-specialize-script-ps1 = <<EOF
+Start-Transcript -Path "${var.install_files_path}\bootstrap-windows-startup.log" -Append
+New-NetFirewallRule -DisplayName 'RDP Port 3389' -Direction Inbound -LocalPort 3389 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName 'WinRM' -Direction Inbound -LocalPort 5985 -Protocol TCP -Action Allow
+
+do {
+    Start-Sleep -Seconds 20
+    Enable-PSRemoting -Force 
+    Set-Item "wsman:\localhost\client\trustedhosts" -Value '*' -Force
+    winrm set winrm/config/service/auth '@{Basic="true"}'  
+    winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+    winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
+    
+    $winrm_cfg=[xml](winrm get winrm/config/service -format:xml)
+    $winrm_cfg.Service
+    $winrm_cfg.Service.Auth
+} While( ($winrm_cfg.Service.AllowUnencrypted -eq "false") -or ($winrm_cfg.Service.Auth.Basic -eq "false") )
 EOF
+
+ }
+
+  connection {
+    host     = "$(address)}" # terraform has recently made a change in the windows provider that requires this in v0.12
+    type     = "winrm"
+    user     = "${var.INSTANCE_USERNAME}"
+    password = "${var.INSTANCE_PASSWORD}" 
+//  password = "${random_string.admin_password.result}"
+    timeout  = "${var.winrm_timeout}"
+    https    = "false"
+    insecure = "true"
+  }
+
 
   provisioner "file" {
     source 		= "test.txt"
     destination 	= "C:/test.txt"
   }
-  connection {
-    host 		= "${self.public_ip}" # terraform has recently made a change in the windows provider that requires this 
-    timeout 		= "10m"
-    type 		= "winrm"
-    user 		= "${var.INSTANCE_USERNAME}"
-    password 		= "${var.INSTANCE_PASSWORD}"
-  }
-}
-
-resource "aws_security_group" "allow_rdp_winrm" {
-  name			= "allow_rdp_winrm"
-  description		= "Allow rdp and winrm traffic"
-
-  ingress {
-    from_port		= 3389
-    to_port             = 3389
-    protocol            = "tcp"
-
-    cidr_blocks         = ["0.0.0.0/0"]  # this should be changed to something secure
-  }
-  ingress {
-    from_port           = 5985
-    to_port             = 5986
-    protocol            = "tcp"
-
-    cidr_blocks         = ["0.0.0.0/0"]  # this should be changed to something secure
-  }
-}
-
-resource "aws_key_pair" "mykey" {
-  key_name              = "mykey"
-  public_key            = "${file("${var.PATH_TO_PUBLIC_KEY}")}"
 }

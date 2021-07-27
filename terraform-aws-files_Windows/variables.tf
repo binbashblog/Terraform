@@ -5,7 +5,7 @@ variable "aws_region" {
   default = "eu-west-1"
 }
 variable "WIN_AMIS" {
- type = "map"
+ type = map(string)
  default = {
   eu-west-1 = "ami-03838ccd5cfb84782"
   eu-west-2 = "ami-0ebf422d2a92724ec"

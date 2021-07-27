@@ -7,9 +7,9 @@ variable "aws_region" {
 variable "AMIS" {
  type = map(string)
  default = {
-  eu-west-1 = "ami-0e312952b4cc28a7f"
-  eu-west-2 = "ami-0207d97139a2faf80"
-  eu-west-3 = "ami-024078eab34b743ca"
+  eu-west-1 = "ami-0d4a18a6050cef430"
+  eu-west-2 = "ami-03397edfc64482efd"
+  eu-west-3 = "ami-0b20c308206de0227"
  }
 } 
 

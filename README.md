@@ -26,10 +26,11 @@ terraform apply
 
 #### Upgrade from Terraform 0.13 to 0.14
 https://releases.hashicorp.com/terraform/0.14.11/terraform_0.14.11_linux_amd64.zip
+
+No need for an upgrade command from 0.14 onwards, just ensure there are no errors with the following commands:
 ```
 terraform init
 terraform plan
-terraform 0.14upgrade
 terraform apply
 ```
 
@@ -37,8 +38,9 @@ terraform apply
 https://releases.hashicorp.com/terraform/1.0.3/terraform_1.0.3_linux_amd64.zip
 
 Upgrading directly to v1 from 0.14 is supported however check the 0.15 upgrade guide for troubleshooting
+No need for an upgrade command, just ensure there are no errors with the following commands:
 ```
 terraform init
 terraform plan
+terraform apply
 ```
-For v1, no upgrade command is needed

@@ -1,13 +1,14 @@
-# Terraform with AWS and Ubuntu
+# Terraform with AWS Lambda
 
 1) In AWS > IAM > New user for Terraform > terraform-user > AWS access type > Programmatic access > administrator access > Review > Create user
 Access key ID and Secret access key is generated
 
 2) In AWS go to > Networking > VPC > Security Groups > Change inbound rules > edit > add rule > ALL TCP > your_IP_Address > Save
+   # Only from your IP address, you can further limit this to just ssh, or nothing at all for testing only
 
 3) 
-echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)
-export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary
+`echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)`
+`export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary`
 
 4) Download Terraform binary:
 

@@ -7,7 +7,7 @@ Access key ID and Secret access key is generated
    #### Only from your IP address, you can further limit this to just ssh, or nothing at all for testing only
 
 3) 
-`echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)`
+`echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)` 
 `export PATH=~/bin:$PATH     // Add ~/bin to $PATH if necessary`
 
 4) Download Terraform binary:

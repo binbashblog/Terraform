@@ -4,7 +4,7 @@
 Access key ID and Secret access key is generated
 
 2) In AWS go to > Networking > VPC > Security Groups > Change inbound rules > edit > add rule > ALL TCP > your_IP_Address > Save
-   # Only from your IP address, you can further limit this to just ssh, or nothing at all for testing only
+   #### Only from your IP address, you can further limit this to just ssh, or nothing at all for testing only
 
 3) 
 `echo $PATH | grep ~/bin     // See if $PATH contains ~/bin (output will be empty if it doesn't)`
@@ -43,8 +43,8 @@ Verify you can run terraform:
 `terraform destroy`
 
 
-# Run the terraform commands to verify everything is working, destroy immediately if you don't want to get a massive bill.
+#### Run the terraform commands to verify everything is working, destroy immediately if you don't want to get a massive bill.
 
-# You should be able to verify the script.sh executed succesfully by putting the public IP in your browser and see the "Welcome to nginx!" page.
+#### You should be able to verify the script.sh executed succesfully by putting the public IP in your browser and see the "Welcome to nginx!" page.
 
-# You can now further expand this script by running puppet commands to configure the instance.
+#### You can now further expand this script by running puppet commands to configure the instance.
